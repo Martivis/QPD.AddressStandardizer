@@ -1,19 +1,18 @@
+using Microsoft.AspNetCore.Mvc;
+using QPD.AddressStandardizer.Exceptions;
 using QPD.AddressStandardizer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
-builder.Services.AddHttpClient();
-builder.Services.AddTransient<ICleanClient, CleanClient>();
+services.AddHttpClient();
+services.AddTransient<ICleanClient, CleanClient>();
+services.AddControllers();
+
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
-app.MapGet("/clean-address", async (string address) =>
-{
-    var client = app.Services.GetRequiredService<ICleanClient>();
-    var result = await client.CleanAddress(address);
-    return result;
-});
+app.MapControllers();
 
 app.Run();

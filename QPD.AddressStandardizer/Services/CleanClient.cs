@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using QPD.AddressStandardizer.Exceptions;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -9,13 +10,16 @@ namespace QPD.AddressStandardizer.Services
         private const string API_URI_SECTION = "Uri";
         private const string API_KEY_SECTION = "ApiKey";
         private const string API_SECRET_SECTION = "Secret";
-        private IConfiguration _configuration;
-        private IHttpClientFactory _httpClientFactory;
 
-        public CleanClient(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        private readonly IConfiguration _configuration;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<CleanClient> _logger;
+
+        public CleanClient(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<CleanClient> logger)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         public async Task<string> CleanAddress(string address)
@@ -35,21 +39,24 @@ namespace QPD.AddressStandardizer.Services
             var response = await client.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
-                throw new ApplicationException("Error was occured");
-
+            {
+                LogError(response);
+                throw new ResponseException();
+            }
+            
             var result = await response.Content.ReadAsStringAsync();
 
             return result;
         }
 
-        private static string SerializeAddress(string address)
+        private string SerializeAddress(string address)
         {
             var content = new List<string> { address };
             var json = JsonSerializer.Serialize(content);
             return json;
         }
 
-        private static HttpRequestMessage CreateRequest(string uri, string apiKey, string secret, string jsonContent)
+        private HttpRequestMessage CreateRequest(string uri, string apiKey, string secret, string jsonContent)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -57,6 +64,11 @@ namespace QPD.AddressStandardizer.Services
             request.Headers.Authorization = new AuthenticationHeaderValue("Token", apiKey);
             request.Headers.Add("X-Secret", $"{secret}");
             return request;
+        }
+
+        private void LogError(HttpResponseMessage response)
+        {
+            _logger.LogError($"Unable to complete request.\nDaData returned {response.StatusCode}: {response.ReasonPhrase}");
         }
     }
 }
