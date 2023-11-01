@@ -4,12 +4,12 @@ Web-service that standardize raw address using Dadata.
 
 # Usage
 
-\```
+```
 curl -X GET \
    -H 'Content-Type: application/json'
    -d '{"address": "Воронеж Плехановская 10"}'
    https://localhost:7167/api/address/clean
-\```
+```
 
 Service will return json from Dadata.
 
