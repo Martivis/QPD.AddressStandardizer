@@ -23,7 +23,6 @@ namespace QPD.AddressStandardizer.Services
         }
 
         public async Task<string> CleanAddress(string address)
-
         {
             var uri = _configuration.GetValue<string>(API_URI_SECTION)
                 ?? throw new InvalidOperationException($"There are no value in \"{API_URI_SECTION}\" section");
@@ -68,7 +67,7 @@ namespace QPD.AddressStandardizer.Services
 
         private void LogError(HttpResponseMessage response)
         {
-            _logger.LogError($"Unable to complete request.\nDaData returned {response.StatusCode}: {response.ReasonPhrase}");
+            _logger.LogError("Unable to complete request.\nDaData returned {statusCode}: {reasonPhrase}", response.StatusCode, response.ReasonPhrase);
         }
     }
 }

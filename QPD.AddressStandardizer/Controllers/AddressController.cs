@@ -10,10 +10,12 @@ namespace QPD.AddressStandardizer.Controllers
     public class AddressController : ControllerBase
     {
         private readonly ICleanClient _cleanClient;
+        private readonly ILogger<AddressController> _logger;
 
-        public AddressController(ICleanClient cleanClient)
+        public AddressController(ICleanClient cleanClient, ILogger<AddressController> logger)
         {
             _cleanClient = cleanClient;
+            _logger = logger;
         }
 
         [HttpGet("clean")]
@@ -21,6 +23,8 @@ namespace QPD.AddressStandardizer.Controllers
         {
             try
             {
+                LogCleanRequest(address);
+
                 var result = await _cleanClient.CleanAddress(address);
                 return Ok(result);
             }
@@ -30,5 +34,9 @@ namespace QPD.AddressStandardizer.Controllers
             }
         }
 
+        private void LogCleanRequest(string address)
+        {
+            _logger.LogInformation("Requested address clean for {address} from {ip}", address, HttpContext.Connection.RemoteIpAddress?.MapToIPv4());
+        }
     }
 }
