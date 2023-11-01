@@ -30,7 +30,7 @@ namespace QPD.AddressStandardizer.Controllers
                 var model = _mapper.Map<AddressModel>(request);
 
                 var result = await _cleanClient.CleanAddress(model);
-                return Ok(result);
+                return Content(result, "application/json");
             }
             catch (ResponseException)
             {
