@@ -4,7 +4,7 @@ Web-service that standardize raw address using Dadata.
 
 # Setup
 
-Put Dadata api `Key` and `Secret` to corresponding field in `appsettings.json` or use user secrets managenent.
+Put Dadata api `Key` and `Secret` to corresponding fields in `appsettings.json` or use user secrets managenent.
 
 # Usage
 
