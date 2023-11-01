@@ -10,6 +10,7 @@ services.AddHttpClient();
 services.AddTransient<ICleanClient, CleanClient>();
 services.AddControllers();
 services.AddAppCors();
+services.AddAppAutoMapper();
 
 var app = builder.Build();
 

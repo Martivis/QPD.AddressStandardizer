@@ -2,6 +2,6 @@
 {
     public interface ICleanClient
     {
-        Task<string> CleanAddress(string address);
+        Task<string> CleanAddress(AddressModel model);
     }
 }

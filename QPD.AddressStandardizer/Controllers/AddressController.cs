@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using QPD.AddressStandardizer.Exceptions;
 using QPD.AddressStandardizer.Services;
@@ -11,21 +11,25 @@ namespace QPD.AddressStandardizer.Controllers
     {
         private readonly ICleanClient _cleanClient;
         private readonly ILogger<AddressController> _logger;
+        private readonly IMapper _mapper;
 
-        public AddressController(ICleanClient cleanClient, ILogger<AddressController> logger)
+        public AddressController(ICleanClient cleanClient, ILogger<AddressController> logger, IMapper mapper)
         {
             _cleanClient = cleanClient;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("clean")]
-        public async Task<IActionResult> Clean(string address) 
+        public async Task<IActionResult> Clean(AddressCleanRequest request) 
         {
             try
             {
-                LogCleanRequest(address);
+                LogCleanRequest(request);
 
-                var result = await _cleanClient.CleanAddress(address);
+                var model = _mapper.Map<AddressModel>(request);
+
+                var result = await _cleanClient.CleanAddress(model);
                 return Ok(result);
             }
             catch (ResponseException)
@@ -34,9 +38,9 @@ namespace QPD.AddressStandardizer.Controllers
             }
         }
 
-        private void LogCleanRequest(string address)
+        private void LogCleanRequest(AddressCleanRequest request)
         {
-            _logger.LogInformation("Requested address clean for {address} from {ip}", address, HttpContext.Connection.RemoteIpAddress?.MapToIPv4());
+            _logger.LogInformation("Requested address clean for {address} from {ip}", request.Address, HttpContext.Connection.RemoteIpAddress?.MapToIPv4());
         }
     }
 }

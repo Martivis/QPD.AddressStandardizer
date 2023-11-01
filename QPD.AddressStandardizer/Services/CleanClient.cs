@@ -22,7 +22,7 @@ namespace QPD.AddressStandardizer.Services
             _logger = logger;
         }
 
-        public async Task<string> CleanAddress(string address)
+        public async Task<string> CleanAddress(AddressModel model)
         {
             var uri = _configuration.GetValue<string>(API_URI_SECTION)
                 ?? throw new InvalidOperationException($"There are no value in \"{API_URI_SECTION}\" section");
@@ -31,7 +31,7 @@ namespace QPD.AddressStandardizer.Services
             var secret = _configuration.GetValue<string>(API_SECRET_SECTION)
                 ?? throw new InvalidOperationException($"There are no value in \"{API_SECRET_SECTION}\" section");
 
-            var content = SerializeAddress(address);
+            var content = SerializeAddress(model.Address);
             using var request = CreateRequest(uri, apiKey, secret, content);
 
             using var client = _httpClientFactory.CreateClient();
