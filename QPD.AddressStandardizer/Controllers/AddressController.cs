@@ -20,6 +20,11 @@ namespace QPD.AddressStandardizer.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Standardize raw address
+        /// </summary>
+        /// <param name="request">Raw address</param>
+        /// <returns>Detailed address information</returns>
         [HttpGet("clean")]
         public async Task<IActionResult> Clean(AddressCleanRequest request) 
         {
